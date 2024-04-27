@@ -10,11 +10,12 @@
         :to="{ name: 'ProductCreate' }"
         color="primary"
         flat>
-        <v-icon start> mdi-plus </v-icon>
+        <v-icon start> mdi:mdi-plus </v-icon>
         เพิ่มสินค้า
       </v-btn>
     </div>
     <v-data-table
+      :loading="loading"
       :headers="headers"
       :items="items"
       @click:row="goToDetail">
@@ -30,11 +31,14 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import axios from 'axios'
 
 const route = useRoute()
 const router = useRouter()
+
+const loading = ref(false)
 
 const headers = ref([
   {
@@ -51,26 +55,7 @@ const headers = ref([
   }
 ])
 
-const items = ref([
-  {
-    id: 1,
-    name: 'เสื้อ',
-    price: 1999,
-    description: 'เสื้อกันหนาว คอยาว'
-  },
-  {
-    id: 2,
-    name: 'กางเกง',
-    price: 2999,
-    description: 'กางเกงขายาว'
-  },
-  {
-    id: 3,
-    name: 'ถุงมือ',
-    price: 999,
-    description: 'ถุงมือสีดำ'
-  }
-])
+const items = ref([])
 
 const fullNumber = (val) => {
   return val.toLocaleString(undefined, {
@@ -82,6 +67,25 @@ const fullNumber = (val) => {
 const goToDetail = (_event, { item }) => {
   router.push({ name: 'ProductDetail', params: { id: item.id } })
 }
+
+const getProducts = async () => {
+  try {
+    loading.value = true
+    const response = await axios.get(`${import.meta.env.VITE_APP_API_URL}/products`)
+
+    // console.log('data => ', response.data)
+
+    items.value = response.data
+  } catch (error) {
+    console.error('[ERROR] get products =>', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  getProducts()
+})
 
 </script>
 

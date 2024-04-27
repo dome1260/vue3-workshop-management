@@ -14,7 +14,7 @@ const router = createRouter({
           component: () => import('@/views/product/pages/ProductList.vue'),
           meta: {
             title: 'รายการสินค้า',
-            icon: 'mdi-package-variant',
+            icon: 'mdi:mdi-package-variant',
             auth: true
           }
         },
@@ -24,7 +24,7 @@ const router = createRouter({
           component: () => import('@/views/product/pages/ProductDetail.vue'),
           meta: {
             title: 'รายละเอียดสินค้า',
-            icon: 'mdi-package-variant',
+            icon: 'mdi:mdi-package-variant',
             auth: true
           }
         },
@@ -34,7 +34,7 @@ const router = createRouter({
           component: () => import('@/views/product/pages/ProductCreate.vue'),
           meta: {
             title: 'สร้างสินค้า',
-            icon: 'mdi-package-variant',
+            icon: 'mdi:mdi-package-variant',
             auth: true
           }
         },
@@ -44,7 +44,7 @@ const router = createRouter({
           component: () => import('@/views/product/pages/ProductEdit.vue'),
           meta: {
             title: 'แก้ไขสินค้า',
-            icon: 'mdi-package-variant',
+            icon: 'mdi:mdi-package-variant',
             auth: true
           }
         },
@@ -85,7 +85,9 @@ router.beforeEach((to, from, next) => {
   // if (to.name !== 'login' && !authData?.accessToken) return next({ name: 'login' })
 
   if (!to?.meta.auth && authData?.accessToken) return next({ name: 'home' })
+
   if (to?.meta?.auth && !authData?.accessToken) return next({ name: 'login' })
+
   else return next()
 })
 
