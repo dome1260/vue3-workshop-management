@@ -34,11 +34,13 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
+import { useLoadingStore } from '@/stores/loading'
 
 const route = useRoute()
 const router = useRouter()
+const loadingStore = useLoadingStore()
 
-const loading = ref(false)
+// const loading = ref(false)
 
 const headers = ref([
   {
@@ -70,16 +72,15 @@ const goToDetail = (_event, { item }) => {
 
 const getProducts = async () => {
   try {
-    loading.value = true
+    // loading.value = true
+    loadingStore.addLoading()
     const response = await axios.get(`${import.meta.env.VITE_APP_API_URL}/products`)
-
-    // console.log('data => ', response.data)
-
     items.value = response.data
   } catch (error) {
     console.error('[ERROR] get products =>', error)
   } finally {
-    loading.value = false
+    // loading.value = false
+    loadingStore.removeLoading()
   }
 }
 

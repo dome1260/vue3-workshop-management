@@ -11,13 +11,15 @@
         color="warning"
         class="mr-4"
         flat>
-        <v-icon start> mdi-square-edit-outline </v-icon>
+        <v-icon start> mdi:mdi-square-edit-outline </v-icon>
         แก้ไข
       </v-btn>
       <v-btn
+        :loading="deleting"
         color="error"
-        flat>
-        <v-icon start> mdi-trash-can-outline </v-icon>
+        flat
+        @click="deleteProductById()">
+        <v-icon start> mdi:mdi-trash-can-outline </v-icon>
         ลบ
       </v-btn>
     </div>
@@ -30,10 +32,10 @@
       </v-col>
       <v-col cols="12" md="8">
         <div class="d-flex flex-column ga-4">
-          <h2> ชื่อ: Product A </h2>
-          <p> ราค: 10900 </p>
+          <h2> ชื่อ: {{ productInfo.name }} </h2>
+          <p> ราค: {{ fullNumber(productInfo.price || 0) }} </p>
           <p>
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dicta quos, numquam suscipit nobis recusandae iste ratione dignissimos minima quibusdam, dolores officiis repudiandae minus eius laudantium temporibus. Placeat voluptates ipsum ea quos? Magnam, eligendi, minima reiciendis quam ex ipsam laborum, non consectetur unde consequatur totam. Soluta eveniet minima nulla voluptas autem.
+            {{ productInfo.description }}
           </p>
         </div>
       </v-col>
@@ -42,8 +44,63 @@
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import axios from 'axios'
+import Swal from 'sweetalert2'
+import { useLoadingStore } from '@/stores/loading'
 
 const route = useRoute()
+const router = useRouter()
+const loadingStore = useLoadingStore()
+
+const deleting = ref(false)
+
+const productInfo = ref({
+  name: '',
+  price: null,
+  description: ''
+})
+
+const fullNumber = (val) => {
+  return val.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  })
+}
+
+const getProductById = async () => {
+  try {
+    loadingStore.addLoading()
+    const response = await axios.get(`${import.meta.env.VITE_APP_API_URL}/products/${route.params.id}`)
+
+    productInfo.value = response.data
+
+  } catch (error) {
+    console.error('[ERROR] get user by id', error)
+  } finally {
+    loadingStore.removeLoading()
+  }
+}
+
+const deleteProductById = async () => {
+  try {
+    deleting.value = true
+    await axios.delete(`${import.meta.env.VITE_APP_API_URL}/products/${route.params.id}`)
+
+    Swal.fire('ลบข้อมูลสำเร็จ')
+
+    router.replace({ name: 'ProductList' })
+
+  } catch (error) {
+    console.error('[ERROR] delete product by id', error)
+  } finally {
+    deleting.value = false
+  }
+}
+
+onMounted(() => {
+  getProductById()
+})
 
 </script>

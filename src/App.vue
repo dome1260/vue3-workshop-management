@@ -5,6 +5,7 @@
     <v-main>
       <router-view />
     </v-main>
+    <Loading />
   </v-app>
 </template>
 
@@ -14,6 +15,7 @@ import { useRoute } from 'vue-router'
 
 import Navbar from '@/components/Navbar.vue'
 import NavigationDrawer from '@/components/NavigationDrawer.vue'
+import Loading from '@/components/Loading.vue'
 
 // import Swal from 'sweetalert2'
 
