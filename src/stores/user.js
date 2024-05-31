@@ -3,8 +3,14 @@ import { defineStore } from 'pinia'
 
 export const useUserStore = defineStore('user', () => {
   const auth = ref({
-    username: '',
-    accessToken: ''
+    user: {
+      id: null,
+      username: '',
+      firstName: '',
+      lastName: ''
+    },
+    accessToken: '',
+    tokenExpire: null
   })
 
   if (localStorage.getItem('workshop_auth')) {
@@ -13,15 +19,28 @@ export const useUserStore = defineStore('user', () => {
 
   const getUserData = computed(() => auth.value)
 
-  const login = (payload) => {
-    auth.value.username = payload.username
-    auth.value.accessToken = payload.accessToken
-
+  const setUserData = (payload) => {
+    auth.value = payload
     localStorage.setItem('workshop_auth', JSON.stringify(auth.value))
+  }
+
+  const resetUserData = () => {
+    auth.value = {
+      user: {
+        id: null,
+        username: '',
+        firstName: '',
+        lastName: ''
+      },
+      accessToken: '',
+      tokenExpire: null
+    }
+    localStorage.clear()
   }
 
   return {
     getUserData,
-    login
+    setUserData,
+    resetUserData
   }
 })

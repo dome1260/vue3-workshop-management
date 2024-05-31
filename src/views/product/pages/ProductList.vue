@@ -15,14 +15,19 @@
       </v-btn>
     </div>
     <v-data-table
-      :loading="loading"
       :headers="headers"
       :items="items"
       @click:row="goToDetail">
       <template #[`item.price`]="{ value }">
-        <div class="text-right">
-          {{ fullNumber(value) }} บาท
-        </div>
+        {{ fullNumber(value) }} บาท
+      </template>
+      <template #[`item.actions`]>
+        <v-btn
+          color="error"
+          variant="text"
+          @click="deleteItem()">
+          <v-icon> mdi:mdi-trash-can-outline </v-icon>
+        </v-btn>
       </template>
       <template #bottom>
       </template>
@@ -35,6 +40,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import { useLoadingStore } from '@/stores/loading'
+import Swal from 'sweetalert2'
 
 const route = useRoute()
 const router = useRouter()
@@ -54,10 +60,16 @@ const headers = ref([
   {
     title: 'รายละเอียด',
     value: 'description',
+  },
+  {
+    title: '',
+    key: 'actions',
+    sortable: false
   }
 ])
 
 const items = ref([])
+const isProcessing = ref(false)
 
 const fullNumber = (val) => {
   return val.toLocaleString(undefined, {
@@ -67,7 +79,16 @@ const fullNumber = (val) => {
 }
 
 const goToDetail = (_event, { item }) => {
-  router.push({ name: 'ProductDetail', params: { id: item.id } })
+  if (!isProcessing.value) {
+    router.push({ name: 'ProductDetail', params: { id: item.id } })
+  } else {
+    isProcessing.value = false
+  }
+}
+
+const deleteItem = () => {
+  isProcessing.value = true
+  Swal.fire('ลบข้อมูลสำเร็จ')
 }
 
 const getProducts = async () => {
@@ -75,7 +96,7 @@ const getProducts = async () => {
     // loading.value = true
     loadingStore.addLoading()
     const response = await axios.get(`${import.meta.env.VITE_APP_API_URL}/products`)
-    items.value = response.data
+    items.value = response.data.data
   } catch (error) {
     console.error('[ERROR] get products =>', error)
   } finally {

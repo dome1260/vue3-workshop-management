@@ -14,7 +14,9 @@
         class="d-flex flex-column justify-center align-center bg-grey text-black">
         <div style="min-width: 240px;">
           <h1 class="mb-4"> เข้าสู่ระบบ </h1>
-          <v-form ref="VForm">
+          <v-form
+            ref="VForm"
+            @submit.prevent="login()">
             <label>
               <!-- <v-icon> mdi:mdi-account-badge </v-icon>
               <v-icon> fas fa-home </v-icon> -->
@@ -34,8 +36,9 @@
               density="compact" />
             <div class="text-right pt-4">
               <v-btn
-                flat
-                @click="login()">
+                :loading="loading"
+                type="submit"
+                flat>
                 เข้าสู่ระบบ
               </v-btn>
             </div>
@@ -47,34 +50,55 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import Swal from 'sweetalert2'
 import { useUserStore } from '@/stores/user'
+import axios from 'axios'
 
 const router = useRouter()
 const userStore = useUserStore()
 
+const loading = ref(false)
 const form = reactive({
   username: '',
   password: ''
 })
 
-const login = () => {
-  // if (form.username && form.password) {
-  //   router.push({ name: 'home' })
-  // } else {
-  //   alert('กรุณากรอกข้อมูลก่อน')
-  // }
+// const login = () => {
+//   if (form.username === 'admin' && form.password === 'admin') {
+//     userStore.login({
+//       username: form.username,
+//       accessToken: 'token_admin_1234'
+//     })
+//     router.push({ name: 'home' })
+//   } else {
+//     Swal.fire('username หรือ password ไม่ถูกต้อง โปรดลองใหม่อีกครั้ง')
+//   }
+// }
 
-  if (form.username === 'admin' && form.password === 'admin') {
-    userStore.login({
+const setLoading = (val) => {
+  loading.value = val
+}
+
+const login = async () => {
+  try {
+    setLoading(true)
+    const response = await axios.post(`${import.meta.env.VITE_APP_API_URL}/auth/login`, {
       username: form.username,
-      accessToken: 'token_admin_1234'
+      password: form.password
     })
+    userStore.setUserData(response.data.data)
+    Swal.fire('เข้าสู่ระบบสำเร็จ')
     router.push({ name: 'home' })
-  } else {
-    Swal.fire('username หรือ password ไม่ถูกต้อง โปรดลองใหม่อีกครั้ง')
+  } catch (error) {
+    console.error('[ERROR] login', error)
+    Swal.fire({
+      icon: 'error',
+      text: error?.message
+    })
+  } finally {
+    setLoading(false)
   }
 }
 

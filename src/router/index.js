@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -78,11 +79,17 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  const userStore = useUserStore()
   const authData = localStorage.getItem('workshop_auth') ? JSON.parse(localStorage.getItem('workshop_auth')) : null
-  // console.log('authData', authData)
+  const dateNow = Math.floor(new Date().valueOf() / 1000)
 
-  // if (to.name !== 'home' && authData?.accessToken) return next({ name: 'home' })
-  // if (to.name !== 'login' && !authData?.accessToken) return next({ name: 'login' })
+  // console.log('dd', to?.meta.auth && authData?.accessToken && (1000 <= dateNow))
+  // console.log('userStore.resetUserData()', userStore)
+
+  if (to?.meta.auth && authData?.accessToken && (authData?.tokenExpire <= dateNow)) {
+    userStore.resetUserData()
+    return next({ name: 'login' })
+  }
 
   if (!to?.meta.auth && authData?.accessToken) return next({ name: 'home' })
 
