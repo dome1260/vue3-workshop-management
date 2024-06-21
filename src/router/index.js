@@ -49,6 +49,16 @@ const router = createRouter({
             auth: true
           }
         },
+        {
+          path: ':id/print',
+          name: 'ProductPrint',
+          component: () => import('@/views/product/pages/ProductPrint.vue'),
+          meta: {
+            title: 'พิมพ์เอกสาร',
+            icon: 'mdi:mdi-package-variant',
+            auth: true
+          }
+        }
       ]
     },
     {

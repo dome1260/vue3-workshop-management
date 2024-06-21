@@ -7,6 +7,13 @@
       <h1> {{ route.meta.title }} </h1>
       <v-spacer />
       <v-btn
+        :to="{ name: 'ProductPrint', params: { id: route.params.id } }"
+        color="primary"
+        class="mr-4"
+        flat>
+        พิมพ์
+      </v-btn>
+      <v-btn
         :to="{ name: 'ProductEdit', params: { id: route.params.id } }"
         color="warning"
         class="mr-4"
@@ -73,9 +80,7 @@ const getProductById = async () => {
   try {
     loadingStore.addLoading()
     const response = await axios.get(`${import.meta.env.VITE_APP_API_URL}/products/${route.params.id}`)
-
-    productInfo.value = response.data
-
+    productInfo.value = response.data.data
   } catch (error) {
     console.error('[ERROR] get user by id', error)
   } finally {
