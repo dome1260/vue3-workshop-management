@@ -20,8 +20,13 @@ import { ref } from 'vue'
 
 const menus = ref([
   {
+    name: 'Dashboard',
+    icon: 'mdi:mdi-monitor-dashboard',
+    to: 'DashboardPage'
+  },
+  {
     name: 'สินค้า',
-    icon: 'mdi-product',
+    icon: 'mdi:mdi-package',
     to: 'ProductList'
   }
 ])

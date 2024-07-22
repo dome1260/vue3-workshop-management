@@ -70,6 +70,14 @@ const router = createRouter({
       }
     },
     {
+      path: '/dashboard',
+      name: 'DashboardPage',
+      component: () => import('@/views/dashboard/Dashboard.vue'),
+      meta: {
+        auth: true
+      }
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('@/views/auth/Login.vue'),
