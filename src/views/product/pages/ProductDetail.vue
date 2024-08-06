@@ -32,10 +32,7 @@
     </div>
     <v-row>
       <v-col cols="12" md="4">
-        <div
-          style="width: 100%; height: 300px;"
-          class="bg-grey">
-        </div>
+        <img :src="productInfo.product_image" width="100%">
       </v-col>
       <v-col cols="12" md="8">
         <div class="d-flex flex-column ga-4">
@@ -66,7 +63,8 @@ const deleting = ref(false)
 const productInfo = ref({
   name: '',
   price: null,
-  description: ''
+  description: '',
+  product_image: ''
 })
 
 const fullNumber = (val) => {

@@ -18,6 +18,12 @@
       :headers="headers"
       :items="items"
       @click:row="goToDetail">
+      <template #[`item.image`]="{ item }">
+        <img
+          :src="item.product_image"
+          width="100"
+          class="my-1">
+      </template>
       <template #[`item.price`]="{ value }">
         {{ fullNumber(value) }} บาท
       </template>
@@ -49,6 +55,11 @@ const loadingStore = useLoadingStore()
 // const loading = ref(false)
 
 const headers = ref([
+  {
+    title: 'รูปสินค้า',
+    value: 'image',
+    align: 'center'
+  },
   {
     title: 'ชื่อ',
     value: 'name',
